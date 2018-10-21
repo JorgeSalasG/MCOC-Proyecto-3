@@ -1,14 +1,14 @@
 import scipy as sp
 
 #Datos Canal
-B = 5. #mts
+B = 7.5 #mts
 ss = 2. #H/V
 yini = 1. #mts
 tol = 1.
 yn = yini
 C0 = 1 #unidades SI, 1,49 en caso de unidades britanicas
-S0 = 0.002 #Depende del slope 
-n = 0.014 # Depende del material
+S0 = 0.0016 #Depende del slope 
+n = 0.012 # Depende del material
 
 while tol>(10**(-6)):
 	#Calculamos Variables
