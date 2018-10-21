@@ -8,7 +8,7 @@ tol = 1.
 yn = yini
 C0 = 1 #unidades SI, 1,49 en caso de unidades britanicas
 S0 = 0.002 #Depende del slope 
-n = 1.2 # Depende del material
+n = 0.014 # Depende del material
 
 while tol>(10**(-6)):
 	#Calculamos Variables
