@@ -2,7 +2,7 @@ import scipy as sp
 
 #Datos Canal
 B = 7.5 #mts
-ss = 2. #H/V
+ss = 2. #H/V 0 si es un canal rectangula
 yini = 1. #mts
 tol = 1.
 yn = yini
