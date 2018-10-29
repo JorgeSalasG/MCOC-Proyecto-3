@@ -22,7 +22,7 @@ while tol>(10**(-6)):
 	yc2 = yc - (fyc/dfyc)
 
 	#Calculo tolerancia
-	tol = sp.abs(yc2-yc)
+	tol = sp.absolute(yc2-yc)
 
 	#Se actualiza yc
 	yc = yc2
