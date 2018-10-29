@@ -14,7 +14,7 @@ while tol>(10**(-6)):
 	#Calculamos Variables
 	A = B*yc + ss*(yc**2)
 	P = B + 2*yc*sp.sqrt(ss**2+1)
-	Q = (C0*(A**(5/3)*(P**(-2/3))*sp.sqrt(S0))/n)
+	Q = 30. #(C0*(A**(5/3)*(P**(-2/3))*sp.sqrt(S0))/n)
 	Tc = B + 2*ss*yc
 	#Preparara Newton-Raphson
 	fyc = (A**3)/(Tc)-(Q**2)/g
