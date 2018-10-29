@@ -16,7 +16,7 @@ while tol>(10**(-6)):
 	P = B + 2*yn*sp.sqrt(ss**2+1)
 	dAdyn = B + 2*ss*yn
 	dPdyn = 2*sp.sqrt(ss**2+1)
-	Q = (C0*(A**(5/3)*(P**(-2/3))*sp.sqrt(S0))/n
+	Q = 30. #(C0*(A**(5/3)*(P**(-2/3))*sp.sqrt(S0))/n)
 
 	#Preparara Newton-Raphson
 	fyn = (A**(5/3))*(P**(-2/3))-(n*Q)/(C0*sp.sqrt(S0))
@@ -24,7 +24,7 @@ while tol>(10**(-6)):
 	yn2 = yn - (fyn/dfyn)
 
 	#Calculo tolerancia
-	tol = sp.abs(yn2-yn)
+	tol = sp.absolute(yn2-yn)
 
 	#Se actualiza yn
 	yn = yn2
