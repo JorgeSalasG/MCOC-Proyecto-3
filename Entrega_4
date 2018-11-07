@@ -27,6 +27,42 @@ def yn(B,ss,yini,tol,C0,S0,n):
         # print "voy en: {}".format(yn)
     return yn
 
+
+def NR_Fgv(yini,B,Q,n,S0,ss,C0,dx,y1,z1):
+	
+	y2 = yini
+
+	if C0 == 1:
+		g = 9.81
+	else :
+		g = 32.2
+
+	tol = 10
+	ite = 0
+
+	while tol > 10 ** -5 and ite < 100:
+		ite += 1
+
+		[A1,dA1,dy1,P1,dP1dy1,R1,dR1dy1] = geom(y1,B,ss)
+		[A2,dA2,dy2,P2,dP2dy2,R2,dR2dy2] = geom(y2,B,ss)
+		z2 = z1 - (s * dx)
+		H1 = z1 + y1 + ((Q ** 2)/(2 * g * (A1 ** 2)))
+		H2 = z2 + y2 + ((Q ** 2)/(2 * g * (A2 ** 2)))
+		sf1 = ((Q * n) ** 2)/((C0 * A1 * (R1 ** (2/3))) ** 2)
+		sf2 = ((Q * n) ** 2)/((C0 * A2 * (R2 ** (2/3))) ** 2)
+
+#Revisar esta parte, porque copie lo de Newton Raphson de la entrega anterior y no se si está bien hecho.
+		fy2 = (A2**(5./3.))*(P2**(-2./3.))-(n*q)/(C0*sp.sqrt(S0))
+		dfy2dy2 = (5./3.)*(A2**(2./3.))*(P2**(-2./3.))*dA2dy2 - (2./3.)*(A2**(5./3.))*(P2**(-5./3.))*dP2dy2
+
+		yf = y2 - fy2/dfy2dy2
+
+		tol = abs(yf-y2)
+		y2 = yf
+
+
+	return y2,z2
+
 #Datos Canal
 B = 10. #mts
 ss = 2. #H/V 0 si es un canal rectangula
