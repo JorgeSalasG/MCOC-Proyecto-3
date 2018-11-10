@@ -87,12 +87,13 @@ def fgv(Q,B,S,ss,C0,x1,y1,z1,dx,n):
 	end
 
 	i=0
-	yn = ynormal()
-	while y[i+1]<yn-diff or y[i+1]>yn+diff:
+	tol = 1000
+	ynor = yn(B,ss,yini,tol,C0,S,n)
+	while y[i+1]<ynor-diff or y[i+1]>ynor+diff:
 		i+=1
 		dist = dist+dx
 		x[i+1]=x[i]+dx
-		[y[i+1],z[i+1]]=NR_Fgv(yini,B,Q,n,S0,ss,C0,dx,y[i],z[i])
+		[y[i+1],z[i+1]]=NR_Fgv(yini,B,Q,n,S,ss,C0,dx,y[i],z[i])
 	end
 
 	elsa = y[i+1]+z[i+1]
