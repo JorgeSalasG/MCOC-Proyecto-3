@@ -80,13 +80,14 @@ def fgv(Q,B,S,ss,C0,x1,y1,z1,dx,n):
 	y[1] = y1
 	z[1] = z1
 	dx = 0.04 #dada
-	if c0 == 1:
+	if C0 == 1:
 		g = 9.81
 	else:
 		g = 32.2
-	end
+	
 
 	i=0
+	diff=0.001
 	tol = 1000
 	ynor = yn(B,ss,yini,tol,C0,S,n)
 	while y[i+1]<ynor-diff or y[i+1]>ynor+diff:
@@ -94,7 +95,7 @@ def fgv(Q,B,S,ss,C0,x1,y1,z1,dx,n):
 		dist = dist+dx
 		x[i+1]=x[i]+dx
 		[y[i+1],z[i+1]]=NR_Fgv(yini,B,Q,n,S,ss,C0,dx,y[i],z[i])
-	end
+	
 
 	elsa = y[i+1]+z[i+1]
 	return [x[i+1],y[i+1],z[i+1],elsa,dist]
