@@ -80,7 +80,7 @@ def fgv(Q,B,S,ss,C0,x1,y1,z1,dx,n):
 	y[1] = y1
 	z[1] = z1
 	dx = 0.04 #dada
-	if c0 = 1:
+	if c0 == 1:
 		g = 9.81
 	else:
 		g = 32.2
