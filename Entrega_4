@@ -35,7 +35,7 @@ def geom(y,B,ss):
 	P = B +2*l
 	dpdy = 2* sp.sqrt((ss**2)+1)
 	R = A/P
-	dRdy = P**(-1)*dpdy - P**(-2)*A*dpdy
+	dRdy = P**(-1)*dady - P**(-2)*A*dpdy
 	return A,dady,P,dpdy,R,dRdy
 
 def NR_Fgv(yini,B,Q,n,S0,ss,C0,dx,y1,z1):
@@ -57,7 +57,7 @@ def NR_Fgv(yini,B,Q,n,S0,ss,C0,dx,y1,z1):
 		H1 = z1 + y1 + ((Q ** 2)/(2 * g * (A1 ** 2)))
 		sf1 = ((Q * n) ** 2)/((C0 * A1 * (R1 ** (2/3))) ** 2)
 		A2,dA2dy2,P2,dP2dy2,R2,dR2dy2 = geom(y2,B,ss)
-		z2 = z1 - (S0 * dx)
+		z2 = z1 + (S0 * dx)
 		H2 = z2 + y2 + ((Q ** 2)/(2 * g * (A2 ** 2)))
 		sf2 = ((Q * n) ** 2)/((C0 * A2 * (R2 ** (2/3))) ** 2)
 		T2 = B + 2*ss*y2
@@ -76,14 +76,14 @@ def NR_Fgv(yini,B,Q,n,S0,ss,C0,dx,y1,z1):
 def fgv(Q,B,S,ss,C0,x1,y1,z1,dx,n):
 	diff=0.001
 	dist=0
-	x = sp.zeros(300)
-	y = sp.zeros(300)
-	z = sp.zeros(300)
+	x = sp.zeros(1000)
+	y = sp.zeros(1000)
+	z = sp.zeros(1000)
 	yini = 5.0 #mts
 	x[1] = x1
 	y[1] = y1
 	z[1] = z1
-	dx = 0.04 #dada
+	dx = 1.2 #dada
 	if C0 == 1:
 		g = 9.81
 	else:
@@ -115,4 +115,6 @@ n = 0.013 # Depende del material
 # yn=yn(B,ss,yini,tol,C0,S0,n)
 # print "la altura normal es: {}".format(yn)
 
-fgv(5,B,S0,ss,C0,0,2,0,0.04,n)
+
+x = fgv(20,B,S0,ss,C0,0,2,0,1.2,n)
+print x
