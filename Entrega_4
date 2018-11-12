@@ -29,16 +29,16 @@ def yn(B,ss,yini,tol,C0,S0,n):
 
 def geom(y,B,ss):
 	A = B*y + ss*(y**2) #canal trapezoidal si rectangular ss = 0
+	# print y,'hola'
 	dady  = B +2*y*ss
 	l = y * sp.sqrt((ss**2)+1)
 	P = B +2*l
 	dpdy = 2* sp.sqrt((ss**2)+1)
 	R = A/P
 	dRdy = P**(-1)*dpdy - P**(-2)*A*dpdy
-	return [A,dady,P,dpdy,R,dRdy]
+	return A,dady,P,dpdy,R,dRdy
 
 def NR_Fgv(yini,B,Q,n,S0,ss,C0,dx,y1,z1):
-	
 	y2 = yini
 
 	if C0 == 1:
@@ -51,30 +51,34 @@ def NR_Fgv(yini,B,Q,n,S0,ss,C0,dx,y1,z1):
 
 	while tol > 10 ** -5 and ite < 100:
 		ite += 1
-		[A1,dA1dy1,P1,dP1dy1,R1,dR1dy1] = geom(y1,B,ss)
+		A1,dA1dy1,P1,dP1dy1,R1,dR1dy1 = geom(y1,B,ss)
+		# print geom(y1,B,ss)
+		# print "Hola soy y1: {}".format(y1)
 		H1 = z1 + y1 + ((Q ** 2)/(2 * g * (A1 ** 2)))
 		sf1 = ((Q * n) ** 2)/((C0 * A1 * (R1 ** (2/3))) ** 2)
-		[A2,dA2dy2,P2,dP2dy2,R2,dR2dy2] = geom(y2,B,ss)
-		z2 = z1 - (s * dx)
+		A2,dA2dy2,P2,dP2dy2,R2,dR2dy2 = geom(y2,B,ss)
+		z2 = z1 - (S0 * dx)
 		H2 = z2 + y2 + ((Q ** 2)/(2 * g * (A2 ** 2)))
 		sf2 = ((Q * n) ** 2)/((C0 * A2 * (R2 ** (2/3))) ** 2)
 		T2 = B + 2*ss*y2
-#Revisar esta parte, porque copie lo de Newton Raphson de la entrega anterior y no se si está bien hecho.
-		fy2 = H2-H1+0.5*dx*(sf1-sf2)
-		dfy2dy2 = 1 - ((Q**2)*dA2dy2)/(g*A2**3) + 0.5*dx*((-2*sf2*dA2sy2/A2)- (4.0/3.0)*(sf2/R2)*(T2/P2-A2*2*sp.sqrt(ss**2+1)/(P2**2)))
-
+#Revisar esta parte, porque copie lo de Newton Raphson de la entrega anterior y no se si esta bien hecho.
+		fy2 = H2-H1+0.5*dx*(sf1+sf2)
+		# dfy2dy2 = 1 - ((Q**2)*dA2dy2)/(g*A2**3) + 0.5*dx*((-2*sf2*dA2sy2/A2)- (4.0/3.0)*(sf2/R2)*(T2/P2-A2*2*sp.sqrt(ss**2+1)/(P2**2)))
+		dfy2dy2=1-((Q**2)*dA2dy2)/(g*A2**3)-dx*(sf2/A2*dA2dy2+2.0/3.0*sf2/R2*dR2dy2)
 		yf = y2 - fy2/dfy2dy2
 
 		tol = abs(yf-y2)
 		y2 = yf
 
 
-	return [y2,z2]
+	return y2,z2
 
 def fgv(Q,B,S,ss,C0,x1,y1,z1,dx,n):
-	x = sp.zeros(200)
-	y = sp.zeros(200)
-	z = sp.zeros(200)
+	diff=0.001
+	dist=0
+	x = sp.zeros(300)
+	y = sp.zeros(300)
+	z = sp.zeros(300)
 	yini = 5.0 #mts
 	x[1] = x1
 	y[1] = y1
@@ -84,18 +88,16 @@ def fgv(Q,B,S,ss,C0,x1,y1,z1,dx,n):
 		g = 9.81
 	else:
 		g = 32.2
-	
 
 	i=0
-	diff=0.001
 	tol = 1000
 	ynor = yn(B,ss,yini,tol,C0,S,n)
 	while y[i+1]<ynor-diff or y[i+1]>ynor+diff:
+		print y[i+1],ynor
 		i+=1
 		dist = dist+dx
 		x[i+1]=x[i]+dx
-		[y[i+1],z[i+1]]=NR_Fgv(yini,B,Q,n,S,ss,C0,dx,y[i],z[i])
-	
+		y[i+1],z[i+1]=NR_Fgv(yini,B,Q,n,S,ss,C0,dx,y[i],z[i])
 
 	elsa = y[i+1]+z[i+1]
 	return [x[i+1],y[i+1],z[i+1],elsa,dist]
@@ -110,5 +112,7 @@ S0 = 0.001 #Depende del slope
 n = 0.013 # Depende del material
 
 
-yn=yn(B,ss,yini,tol,C0,S0,n)
-print "la altura normal es: {}".format(yn)
+# yn=yn(B,ss,yini,tol,C0,S0,n)
+# print "la altura normal es: {}".format(yn)
+
+fgv(5,B,S0,ss,C0,0,2,0,0.04,n)
