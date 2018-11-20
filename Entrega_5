@@ -1,4 +1,6 @@
 import scipy as sp
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 def ynormal(tol,B,q,ss,n,S0,C0):
     yn = 20
@@ -12,7 +14,7 @@ def ynormal(tol,B,q,ss,n,S0,C0):
         Q = (C0*(A**(5./3.)*(P**(-2./3.))*sp.sqrt(S0))/n)
         
         fyn = (A**(5./3.))*(P**(-2./3.))-(n*q)/(C0*sp.sqrt(S0))
-        dfdyn = (5./3.)*(A**(2./3.))*(P**(-2./3.))*dAdyn - (2./3.)*(A**(5./3.))*(P**(5./3.))*dPdyn
+        dfdyn = (5./3.)*(A**(2./3.))*(P**(-2./3.))*dAdyn - (2./3.)*(A**(5./3.))*(P**(-5./3.))*dPdyn
         yn2 = yn - (fyn/dfdyn)
         
         tol = abs(yn2-yn)
@@ -22,7 +24,7 @@ def ynormal(tol,B,q,ss,n,S0,C0):
     return yn
 
 def NRalfa(Q,B,ss,C0,S0,n):
-    yini = 5
+    yini = 1
     y2 = yini
     
     if C0 == 1:
@@ -32,7 +34,7 @@ def NRalfa(Q,B,ss,C0,S0,n):
     
     tol = 10
     ite = 0
-    while tol > (10**(-6)) and ite < 100:
+    while tol > 0.001:
         ite+=1
         A = B*y2 + ss*(y2**2)
         dady = B + 2*ss*y2
@@ -40,12 +42,16 @@ def NRalfa(Q,B,ss,C0,S0,n):
         P = B + 2*l
         dpdy = 2*sp.sqrt((ss**2)+1)
         beta = 3./5.
-        alpha = ((n*P**(2./3.))/(C0*sp.sqrt(S0)))**beta
+        alpha = (n*P**(2./3.)/(C0*sp.sqrt(S0)))**beta
         fy = A - alpha*(Q**beta)
-        dfdy = dady - (2./5.)*(((n*Q)/(C0*S0))**beta)*dpdy*P**(-beta)
+        dfdy = dady - (2./5.)*(n*Q/(C0*sp.sqrt(S0)))**beta*dpdy*P**(-beta)
+        # # print "dady: {}".format(dady)
+        # print Q
+        # q=raw_input()
         yf = y2 - fy/dfdy
         
         tol = abs(yf-y2)
+        # print tol
         
         y2 = yf
         lista = [yf,A]
@@ -61,6 +67,7 @@ C0 = 1.485
 NC = 1.
 Tfin = 600*60
 g = 32.2
+
 dx = L/(N-1)
 x = sp.zeros(N)
 for i in range(len(x)-1):
@@ -70,36 +77,75 @@ Q = sp.zeros((N,N))
 Q[0,:] = 250.
 
 y = sp.zeros((N,N))
+print Q[0,1]
 y[0,:] = ynormal(1,B,Q[0,1],ss,n,S,C0)
+print y[0,0]
 
 A = sp.zeros((N,N))
-A[0,:] = B*y[0,1]
+A[0,:] = B*y[0,0]
 
 V = sp.zeros((N,N))
-V[0,:] = Q[0,1]/A[0,1]
+V[0,:] = Q[0,0]/A[0,0]
 t = 0
 k = 0
 pi = sp.pi
+# plt.show()
+print 'holi'
+# plt.axis((0,L,0,8))
+
+xdata,ydata=[],[]
+axes=plt.gca()
+axes.set_xlim(0,L)
+axes.set_ylim(0,8)
+
+line, =axes.plot(xdata,ydata)
 
 while t < Tfin:
+    print "Ejecucion: {}%".format(t/Tfin*100)
+    print NC*dx/(sp.mean(V[k,:]))
     dt = NC*dx/(sp.mean(V[k,:]))
+    print "dt: {}".format(dt)
     k+=1
     t+=dt
     tshow = t/60
     
     if t <= 150*60:
-        Q[k,1] = 250. + 270./pi*(1-sp.cos(pi*t/(60*75)))
+        Q[k,0] = 250. + 750./pi*(1-sp.cos(pi*t/(60*75)))
     else:
-        Q[k,1] = 250.
+        Q[k,0] = 250.
     
-    ay = NRalfa(Q[k,1],B,ss,C0,S,n)
-    A[k,1] = ay[1]
-    y[k,1] = ay[0]
-    V[k,1] = Q[k,1]/A[k,1]
+    ay = NRalfa(Q[k,0],B,ss,C0,S,n)
+    A[k,0] = ay[1]
+    y[k,0] = ay[0]
+    V[k,0] = Q[k,0]/A[k,0]
+
     
-    for i in range(len(x)-1):
+    for i in range(0,N-1):
         Q[k,i+1] = Q[k,i] - dt/dx*(A[k,i]-A[k-1,i])
-        ay = NRalfa(Q[k,i+1],B,ss,C0,S,n)
+
+        ay = NRalfa(Q[k,i],B,ss,C0,S,n)
         A[k,i+1] = ay[1]
         y[k,i+1] = ay[0]
         V[k,i+1] = Q[k,i+1]/A[k,i+1]
+    # plt.subplot(211)
+    line.set_xdata(x)
+    line.set_ydata(y[k,:])
+    linea=plt.draw()
+    linea="tiempo: {}".format(t/60)    
+    plt.title(linea)
+    # plt.subplot(212)
+    # line.set_xdata(x)
+    # line.set_ydata(Q[k,:])
+    linea=plt.draw()
+    plt.pause(1e-10)
+    if k==1:
+        # plt.cla()
+        # linea.remove()
+        pass
+
+    # plt.axis((0,L,0,8))
+    # plt.plot(x,y[k,:])
+    # plt.show()
+
+plt.show()
+print "adios"
